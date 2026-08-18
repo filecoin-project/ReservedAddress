@@ -1,0 +1,92 @@
+[
+    {
+        "address": "0x000000000000c57CF0A1f923d44527e703F1ad70",
+        "construct": "src/Deployer.evm",
+        "tests": [
+            {
+                "name": "reserve unclaimed address",
+                "gasUsed": "0xaa8e",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
+            },
+            {
+                "name": "ownerOf reflects reserver",
+                "gasUsed": "0x5c8e",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0x6352211e000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+                "output": "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            },
+            {
+                "name": "reserve already-reserved address reverts NotOwner",
+                "gasUsed": "0x5c80",
+                "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+                "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+                "status": "0x0",
+                "output": "0x30cd7471"
+            },
+            {
+                "name": "reserve address later disputed",
+                "gasUsed": "0xaa8e",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0xe75179a4000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6"
+            },
+            {
+                "name": "dispute never-reserved address reverts NotOwner",
+                "gasUsed": "0x5c9f",
+                "from": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+                "input": "0xf75f9f7b0000000000000000000000009797979797979797979797979797979797979797",
+                "status": "0x0",
+                "output": "0x30cd7471"
+            },
+            {
+                "name": "dispute within a day reverts Reserved",
+                "gasUsed": "0x5cb8",
+                "from": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+                "input": "0xf75f9f7b000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+                "status": "0x0",
+                "output": "0xfaf3f41e"
+            },
+            {
+                "name": "dispute after a day succeeds",
+                "gasUsed": "0x67fa",
+                "from": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+                "input": "0xf75f9f7b000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+                "timestamp": "0x65727780"
+            },
+            {
+                "name": "ownerOf reflects disputer",
+                "gasUsed": "0x5c8e",
+                "from": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+                "input": "0x6352211e000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+                "output": "0x000000000000000000000000d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+            },
+            {
+                "name": "reserve address for reveal",
+                "gasUsed": "0xaa8e",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0xe75179a400000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb2"
+            },
+            {
+                "name": "reveal by non-reserver reverts NotOwner",
+                "gasUsed": "0xbcc6",
+                "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+                "input": "0x5a62852500000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb20123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                "status": "0x0",
+                "output": "0x30cd7471"
+            },
+            {
+                "name": "reveal by reserver succeeds",
+                "gasUsed": "0xc80b",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0x5a62852500000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb20123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            },
+            {
+                "name": "ownerOf reflects revealer",
+                "gasUsed": "0x5c8e",
+                "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "input": "0x6352211e00000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb2",
+                "output": "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            }
+        ]
+    }
+]

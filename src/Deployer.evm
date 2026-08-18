@@ -130,7 +130,6 @@ JUMPI(accessdenied, XOR(CALLER, AND(0xffffffffffffffffffffffffffffffffffffffff, 
 SSTORE
 STOP
 
-
 transfer:
 // transfer(address, address)
 CALLDATALOAD(4) // recipient

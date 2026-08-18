@@ -8,6 +8,7 @@ clean:
 
 test: build
 	make -C lib/evm check
+	@for f in test/dio/*.json; do evm -w "$$f" || exit 1; done
 	forge test
 
 define ASM_ARTIFACT
