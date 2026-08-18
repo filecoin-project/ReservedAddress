@@ -1,0 +1,14 @@
+{
+  "lib/evm": {
+    "rev": "e4aa31397e75da25682c0a085b74f8df95e9d41c"
+  },
+  "lib/forge-std": {
+    "rev": "680ee6692649dcc7c617e05b2144932618264a83"
+  },
+  "lib/solady": {
+    "tag": {
+      "name": "v0.1.26",
+      "rev": "acd959aa4bd04720d640bf4e6a5c71037510cc4b"
+    }
+  }
+}
