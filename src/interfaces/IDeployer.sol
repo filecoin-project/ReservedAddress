@@ -7,9 +7,10 @@ interface IDeployer {
     function deploy(address reserved, address initCode) external;
     function call(address deployed, bytes calldata callData) external payable /*returns (raw_bytes)*/;
 
-    // Auction
-    function reveal(address reserved, bytes32 salt) external;
+    // Registration
+    error Reserved();
     function reserve(address reserved) external;
+    function reveal(address reserved, bytes32 salt) external;
     function dispute(address reserved) external;
 
     // IERC721

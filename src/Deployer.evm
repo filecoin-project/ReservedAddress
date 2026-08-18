@@ -60,6 +60,10 @@ accessdenied:
 MSTORE(0, 0x30cd7471)
 REVERT(28, 4)
 
+backoff:
+MSTORE(0, 0xfaf3f41e)
+REVERT(28, 4)
+
 noteoa:
 MSTORE(MSIZE, 0x6e6f7420656f6100000000000000000000000000000000000000000000000000)
 REVERT(0, MSIZE)
@@ -108,7 +112,7 @@ STOP
 disputechecktime:
 // stack is: next_expiring_pending_owner target claimtime
 SUB(TIMESTAMP, 86400) // expiry of 1 day
-JUMPI(accessdenied, LT)
+JUMPI(backoff, LT)
 SSTORE
 STOP
 
@@ -188,7 +192,7 @@ RETURN(RETURNDATASIZE, 136)
 
 ownerof:
 // ownerOf(uint256)
-MSTORE(MSIZE, SLOAD(CALLDATALOAD(4)))
+MSTORE(MSIZE, AND(0xffffffffffffffffffffffffffffffffffffffff, SLOAD(CALLDATALOAD(4))))
 RETURN(RETURNDATASIZE, MSIZE)
 
 totalsupply:

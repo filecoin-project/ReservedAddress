@@ -5,14 +5,20 @@ import {Test} from "forge-std/Test.sol";
 import {LibClone} from "solady/utils/LibClone.sol";
 
 import {IDeployer} from "../src/interfaces/IDeployer.sol";
+import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
 import {Example} from "./Example.sol";
 
+uint256 constant DAY = 24 * 60 * 60;
+uint256 constant START_TIME = 1787089200; 
 
 contract DeploymentTest is Test {
+    using IDeployerLibrary for IDeployer;
+
     // TODO mine a deployer with Nick's Method
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
     function setUp() public {
         vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
+        vm.warp(START_TIME);
     }
 
     function testReserveRevealDeployCall() public {
@@ -24,14 +30,20 @@ contract DeploymentTest is Test {
         address initCode = makeAddr("initCode");
         vm.etch(initCode, type(Example).creationCode);
 
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+
         vm.prank(sender);
         DEPLOYER.reserve(reserved);
+
+        assertEq(DEPLOYER.ownerOf(reserved), sender);
 
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.reveal(reserved, salt);
 
         vm.prank(sender);
         DEPLOYER.reveal(reserved, salt);
+
+        assertEq(DEPLOYER.ownerOf(reserved), sender);
 
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.deploy(reserved, initCode);
@@ -58,5 +70,31 @@ contract DeploymentTest is Test {
         assertEq(recipient.balance, 1 ether);
         assertEq(reserved.balance, 0);
         assertEq(sender.balance, 0);
+        assertEq(DEPLOYER.ownerOf(reserved), sender);
+    }
+
+    function testDispute() public {
+        address reserved = makeAddr("reserved");
+        address squatter = makeAddr("squatter");
+        address disputer = makeAddr("disputer");
+
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+
+        vm.prank(squatter);
+        DEPLOYER.reserve(reserved);
+
+        assertEq(DEPLOYER.ownerOf(reserved), squatter);
+
+        vm.expectRevert(IDeployer.Reserved.selector);
+        vm.prank(disputer);
+        DEPLOYER.dispute(reserved);
+
+        assertEq(DEPLOYER.ownerOf(reserved), squatter);
+
+        skip(DAY);
+
+        vm.prank(disputer);
+        DEPLOYER.dispute(reserved);
+        assertEq(DEPLOYER.ownerOf(reserved), disputer);
     }
 }
