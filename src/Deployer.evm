@@ -64,10 +64,6 @@ backoff:
 MSTORE(0, 0xfaf3f41e)
 REVERT(28, 4)
 
-noteoa:
-MSTORE(MSIZE, 0x6e6f7420656f6100000000000000000000000000000000000000000000000000)
-REVERT(0, MSIZE)
-
 deploy:
 // deploy(address,address)
 
@@ -138,7 +134,6 @@ STOP
 transfer:
 // transfer(address, address)
 CALLDATALOAD(4) // recipient
-JUMPI(noteoa, XOR(0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470, EXTCODEHASH(DUP1)))
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // target
 JUMPI(accessdenied, XOR(CALLER, SLOAD(DUP1)))
 LOG4(MSIZE, MSIZE, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, CALLER, DUP3, DUP1)
