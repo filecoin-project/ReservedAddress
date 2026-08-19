@@ -193,7 +193,7 @@ RETURN(0, 147)
 
 ownerof:
 // ownerOf(uint256)
-MSTORE(MSIZE, AND(0xffffffffffffffffffffffffffffffffffffffff, SLOAD(CALLDATALOAD(4))))
+MSTORE(MSIZE, MUL(ISZERO(SHR(160, DUP1)), SLOAD(CALLDATALOAD(4))))
 RETURN(0, MSIZE)
 
 totalsupply:

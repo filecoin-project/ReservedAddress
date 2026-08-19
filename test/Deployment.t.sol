@@ -35,7 +35,7 @@ contract DeploymentTest is Test {
         vm.prank(sender);
         DEPLOYER.reserve(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), sender);
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
 
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.reveal(reserved, salt);
@@ -88,18 +88,18 @@ contract DeploymentTest is Test {
         vm.prank(squatter);
         DEPLOYER.reserve(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), squatter);
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
 
         vm.expectRevert(IDeployer.Reserved.selector);
         vm.prank(disputer);
         DEPLOYER.dispute(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), squatter);
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
 
         skip(DAY);
 
         vm.prank(disputer);
         DEPLOYER.dispute(reserved);
-        assertEq(DEPLOYER.ownerOf(reserved), disputer);
+        assertEq(DEPLOYER.ownerOf(reserved), address(0));
     }
 }

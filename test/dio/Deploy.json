@@ -10,11 +10,11 @@
                 "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
             },
             {
-                "name": "ownerOf reflects reserver",
+                "name": "reserved is unowned",
                 "gasUsed": "0x5c8e",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x6352211e000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
-                "output": "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             },
             {
                 "name": "reserve already-reserved address reverts NotOwner",
@@ -54,11 +54,11 @@
                 "timestamp": "0x65727780"
             },
             {
-                "name": "ownerOf reflects disputer",
+                "name": "after dispute, still unowned",
                 "gasUsed": "0x5c8e",
                 "from": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
                 "input": "0x6352211e000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
-                "output": "0x000000000000000000000000d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             },
             {
                 "name": "reserve address for reveal",
