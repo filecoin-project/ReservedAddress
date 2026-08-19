@@ -1,0 +1,35 @@
+[
+    {
+        "address": "0x000000000000c57CF0A1f923d44527e703F1ad70",
+        "construct": "src/Deployer.evm",
+        "tests": [
+            {
+                "name": "isApprovedForAll initially false",
+                "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            {
+                "name": "setApprovalForAll to true",
+                "from": "0xaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae",
+                "input": "0xa22cb465000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd0000000000000000000000000000000000000000000000000000000000000001",
+                "output": "0x"
+            },
+            {
+                "name": "isApprovedForAll now true",
+                "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000001"
+            },
+            {
+                "name": "setApprovalForAll to false",
+                "from": "0xaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae",
+                "input": "0xa22cb465000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd0000000000000000000000000000000000000000000000000000000000000000",
+                "output": "0x"
+            },
+            {
+                "name": "isApprovedForAll again false",
+                "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+        ]
+    }
+]
