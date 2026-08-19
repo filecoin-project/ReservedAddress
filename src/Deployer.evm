@@ -46,6 +46,7 @@ JUMPI(gta, LT(0xa0000000000000000000000000000000, DUP1))
 JUMPI(call, EQ(0x1b8b921d000000000000000000000000, DUP1))
 JUMPI(deploy, EQ(0x545e7c61000000000000000000000000, DUP1))
 JUMPI(reveal, EQ(0x5a628525000000000000000000000000, DUP1))
+JUMPI(approve, EQ(0x095ea7b3000000000000000000000000, DUP1))
 JUMPI(ownerof, EQ(0x6352211e000000000000000000000000, DUP1))
 JUMPI(getapproved, EQ(0x081812fc000000000000000000000000, DUP1))
 JUMPI(balanceof, EQ(0x70a08231000000000000000000000000, DUP1))
@@ -238,7 +239,7 @@ RETURN(0, MSIZE)
 
 getapproved:
 // getApproved(uint256)
-CALLDATALOAD(4)
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))
 
 JUMPI(getapprovedvalidtoken, MUL(ISZERO(SHR(160, DUP1)), SLOAD(DUP1)))
 REVERT(0, 0)
@@ -248,6 +249,26 @@ getapprovedvalidtoken:
 MSTORE(0, SLOAD(OR))
 RETURN(0, MSIZE)
 
+approve:
+// approve(address, uint256)
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // tokenId
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4)) // operator
+SLOAD(DUP2) // reservation
+JUMPI(approveauthorized, EQ(CALLER, DUP1)) // caller is owner
+JUMPI(accessdenied, SHR(160, DUP1))
+MSTORE(20, CALLER)
+MSTORE(0, DUP1)
+JUMPI(accessdenied, ISZERO(SLOAD(ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(12, 40), 0xfffffffffffffffffffffffc0000000000000000000000000000000000000000)))))
+// caller is owner's authorized operator
+// fall through
+
+approveauthorized:
+// stack is: tokenId operator owner
+
+SSTORE(OR(0x20000000000000000000000000000000000000000, DUP4), DUP2)
+0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925 0 0 LOG4
+STOP
+
 isapprovedforall:
 MSTORE(0, CALLDATALOAD(16))
 MSTORE(20, CALLDATALOAD(48))
@@ -255,6 +276,7 @@ MSTORE(0, SLOAD(ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(0, 40)
 RETURN(0, 32)
 
 setapprovalforall:
+// setApprovalForAll(address, bool)
 ISZERO(ISZERO(CALLDATALOAD(36)))
 MSTORE(0, DUP1)
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))

@@ -8,7 +8,6 @@ import {IERC165} from "../../src/interfaces/IERC165.sol";
 import {IERC721} from "../../src/interfaces/IERC721.sol";
 import {IERC721Metadata} from "../../src/interfaces/IERC721Metadata.sol";
 
-
 contract ERC165Test is Test {
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 

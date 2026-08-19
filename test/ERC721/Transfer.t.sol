@@ -30,6 +30,49 @@ contract MetadataTest is Test {
         assertEq(DEPLOYER.ownerOf(tokenId), owner);
     }
 
+    function testApproveTransfer() public {
+        vm.expectRevert();
+        DEPLOYER.getApproved(1);
+
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+        address operator = makeAddr("operator");
+        address recipient = makeAddr("recipient");
+
+        uint256 token1 = mint(SALT1, origin);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        DEPLOYER.approve(approved, token1);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), approved);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.ApprovalForAll(origin, operator, true);
+        DEPLOYER.setApprovalForAll(operator, true);
+
+        vm.prank(operator);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, address(0), token1);
+        DEPLOYER.approve(address(0), token1);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+
+        vm.prank(operator);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), approved);
+    }
+
     function testApproveForAllTransfer() public {
         address origin = makeAddr("origin");
         address operator = makeAddr("operator");
@@ -39,7 +82,7 @@ contract MetadataTest is Test {
 
         assertFalse(DEPLOYER.isApprovedForAll(origin, operator));
 
-        vm.expectEmit();
+        vm.expectEmit(address(DEPLOYER));
         emit IERC721.ApprovalForAll(origin, operator, true);
         vm.prank(origin);
         DEPLOYER.setApprovalForAll(operator, true);
