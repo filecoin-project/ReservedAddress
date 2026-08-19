@@ -17,6 +17,7 @@ interface IDeployer {
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+    function balanceOf(address owner) external view returns (uint256 balance);
     function ownerOf(uint256 tokenId) external view returns (address owner);
     function getApproved(uint256 tokenId) external view returns (address operator);
     function isApprovedForAll(address owner, address operator) external view returns (bool);
@@ -27,8 +28,16 @@ interface IDeployer {
     function setApprovalForAll(address operator, bool approved) external;
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 
+    // IERC165
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+
     // IERC721Metadata
     function name() external pure returns (string memory);
     function symbol() external pure returns (string memory);
     function tokenURI(uint256 tokenId) external pure returns (string memory);
+
+    // IERC721Enumerable
+    // tokenOfOwnerByIndex is not supported
+    function totalSupply() external view returns (uint256);
+    function tokenByIndex(uint256 index) external view returns (uint256);
 }
