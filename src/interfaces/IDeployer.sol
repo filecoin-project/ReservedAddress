@@ -22,6 +22,8 @@ interface IDeployer {
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
+    error InvalidAddress();
+
     function balanceOf(address owner) external view returns (uint256 balance);
     function ownerOf(uint256 tokenId) external view returns (address owner);
     function getApproved(uint256 tokenId) external view returns (address operator);

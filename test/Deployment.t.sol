@@ -14,7 +14,6 @@ uint256 constant START_TIME = 1787089200;
 contract DeploymentTest is Test {
     using IDeployerLibrary for IDeployer;
 
-    // TODO mine a deployer with Nick's Method
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     function setUp() public {
@@ -39,6 +38,9 @@ contract DeploymentTest is Test {
         assertEq(holder, address(0));
         assertEq(expiry, 0);
 
+        vm.expectRevert();
+        DEPLOYER.getApproved(reserved);
+
         vm.prank(sender);
         DEPLOYER.reserve(reserved);
 
@@ -58,9 +60,12 @@ contract DeploymentTest is Test {
         vm.prank(sender);
         DEPLOYER.reveal(reserved, badSalt);
 
+        assertEq(DEPLOYER.balanceOf(sender), 0);
+
         vm.prank(sender);
         DEPLOYER.reveal(reserved, salt);
 
+        assertEq(DEPLOYER.balanceOf(sender), 1);
         assertEq(DEPLOYER.ownerOf(reserved), sender);
         (holder, expiry) = DEPLOYER.reservation(reserved);
         assertEq(holder, sender);

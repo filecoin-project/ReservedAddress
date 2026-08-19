@@ -76,7 +76,7 @@
             },
             {
                 "name": "reveal by reserver succeeds",
-                "gasUsed": "0xc80b",
+                "gasUsed": "0x11e73",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x5a62852500000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb20123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
             },
