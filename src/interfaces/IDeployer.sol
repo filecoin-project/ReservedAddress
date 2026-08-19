@@ -10,6 +10,7 @@ interface IDeployer {
     // Registration
     error Reserved();
     function reserve(address reserved) external;
+    error BadSalt();
     function reveal(address reserved, bytes32 salt) external;
     function dispute(address reserved) external;
 

@@ -40,6 +40,11 @@ contract DeploymentTest is Test {
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.reveal(reserved, salt);
 
+        bytes32 badSalt = 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee;
+        vm.expectRevert(IDeployer.BadSalt.selector);
+        vm.prank(sender);
+        DEPLOYER.reveal(reserved, badSalt);
+
         vm.prank(sender);
         DEPLOYER.reveal(reserved, salt);
 
