@@ -11,18 +11,18 @@
             },
             {
                 "name": "reserved is unowned",
-                "gasUsed": "0x5c8e",
+                "gasUsed": "0x5c99",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x6352211e000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             },
             {
-                "name": "reserve already-reserved address reverts NotOwner",
+                "name": "reserve already-reserved address reverts Reserved",
                 "gasUsed": "0x5c6a",
                 "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
                 "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
                 "status": "0x0",
-                "output": "0x30cd7471"
+                "output": "0xfaf3f41e"
             },
             {
                 "name": "reserve address later disputed",
@@ -55,7 +55,7 @@
             },
             {
                 "name": "after dispute, still unowned",
-                "gasUsed": "0x5c8e",
+                "gasUsed": "0x5c99",
                 "from": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
                 "input": "0x6352211e000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
@@ -82,7 +82,7 @@
             },
             {
                 "name": "ownerOf reflects revealer",
-                "gasUsed": "0x5c8e",
+                "gasUsed": "0x5c99",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x6352211e00000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb2",
                 "output": "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"

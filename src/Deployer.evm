@@ -57,6 +57,7 @@ JUMPI(tokenuri, EQ(0xc87b56dd000000000000000000000000, DUP1))
 REVERT(0, MSIZE)
 
 badhash:
+// error BadSalt()
 MSTORE(0, 0xb6a71f7b)
 REVERT(28, 4)
 
@@ -69,10 +70,12 @@ JUMPI(disputechecktime, DUP1)
 // fallthrough to accessdenied
 
 accessdenied:
+// error NotOwner()
 MSTORE(0, 0x30cd7471)
 REVERT(28, 4)
 
-backoff:
+reserved:
+// error Reserved()
 MSTORE(0, 0xfaf3f41e)
 REVERT(28, 4)
 
@@ -115,14 +118,14 @@ reserve:
 // reserve(address)
 OR(CALLER, SHL(160, TIMESTAMP))  // expiring_pending_owner
 CALLDATALOAD(4)  // target
-JUMPI(accessdenied, SLOAD(DUP1))
+JUMPI(reserved, SLOAD(DUP1))
 SSTORE
 STOP
 
 disputechecktime:
 // stack is: next_expiring_pending_owner target claimtime
 SUB(TIMESTAMP, 86400) // expiry of 1 day
-JUMPI(backoff, LT)
+JUMPI(reserved, LT)
 SSTORE
 STOP
 

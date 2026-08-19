@@ -37,6 +37,9 @@ contract DeploymentTest is Test {
 
         assertEq(DEPLOYER.ownerOf(reserved), address(0));
 
+        vm.expectRevert(IDeployer.Reserved.selector);
+        DEPLOYER.reserve(reserved);
+
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.reveal(reserved, salt);
 
