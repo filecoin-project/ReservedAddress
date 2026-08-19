@@ -5,6 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {LibClone} from "solady/utils/LibClone.sol";
 
 import {IDeployer} from "../../src/interfaces/IDeployer.sol";
+import {IERC721} from "../../src/interfaces/IERC721.sol";
 
 contract MetadataTest is Test {
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
@@ -38,6 +39,8 @@ contract MetadataTest is Test {
 
         assertFalse(DEPLOYER.isApprovedForAll(origin, operator));
 
+        vm.expectEmit();
+        emit IERC721.ApprovalForAll(origin, operator, true);
         vm.prank(origin);
         DEPLOYER.setApprovalForAll(operator, true);
 

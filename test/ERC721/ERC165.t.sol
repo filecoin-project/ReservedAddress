@@ -28,4 +28,12 @@ contract ERC165Test is Test {
     function testSupports721Metadata() public pure {
         assertTrue(DEPLOYER.supportsInterface(type(IERC721Metadata).interfaceId));
     }
+
+    function testDoesNotSupport721Enumerable() public pure {
+        assertFalse(DEPLOYER.supportsInterface(0x780e9d63));
+    }
+
+    function testDoesNotSupport721TokenReceiver() public pure {
+        assertFalse(DEPLOYER.supportsInterface(0x150b7a02));
+    }
 }
