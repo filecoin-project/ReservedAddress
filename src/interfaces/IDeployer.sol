@@ -36,7 +36,7 @@ interface IDeployer {
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
 
     // IERC165
-    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+    function supportsInterface(bytes4 interfaceId) external pure returns (bool);
 
     // IERC721Metadata
     function name() external pure returns (string memory);
