@@ -39,7 +39,6 @@ JUMPI(name, EQ(0x06fdde03000000000000000000000000, DUP1))
 REVERT(0, MSIZE)
 
 gta:
-JUMPI(transfer, EQ(0xba45b0b8000000000000000000000000, DUP1))
 JUMPI(reserve, EQ(0xe75179a4000000000000000000000000, DUP1))
 JUMPI(dispute, EQ(0xf75f9f7b000000000000000000000000, DUP1))
 JUMPI(tokenuri, EQ(0xc87b56dd000000000000000000000000, DUP1))
@@ -130,15 +129,6 @@ MSTORE(MSIZE, 0xbcbdfadcc59d9dc57408c9c0b8c471bde38115ed725ac4bbe1308d01651d5d99
 JUMPI(badhash, XOR(AND(0xffffffffffffffffffffffffffffffffffffffff, SHA3(11, 85)), DUP1))
 
 JUMPI(accessdenied, XOR(CALLER, AND(0xffffffffffffffffffffffffffffffffffffffff, SLOAD(DUP1))))
-SSTORE
-STOP
-
-transfer:
-// transfer(address, address)
-CALLDATALOAD(4) // recipient
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // target
-JUMPI(accessdenied, XOR(CALLER, SLOAD(DUP1)))
-LOG4(MSIZE, MSIZE, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, CALLER, DUP3, DUP1)
 SSTORE
 STOP
 
