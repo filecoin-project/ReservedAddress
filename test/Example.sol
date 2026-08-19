@@ -4,6 +4,7 @@ pragma solidity ^0.8.36;
 contract Example {
     address public owner;
     uint256 public myNumber;
+
     constructor() {
         owner = msg.sender;
     }
@@ -12,7 +13,7 @@ contract Example {
         require(msg.sender == owner);
         myNumber = number;
     }
-    
+
     function pay(address payable recipient) external payable {
         recipient.transfer(msg.value);
     }

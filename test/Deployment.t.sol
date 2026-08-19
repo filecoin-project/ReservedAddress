@@ -9,13 +9,14 @@ import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
 import {Example} from "./Example.sol";
 
 uint256 constant DAY = 24 * 60 * 60;
-uint256 constant START_TIME = 1787089200; 
+uint256 constant START_TIME = 1787089200;
 
 contract DeploymentTest is Test {
     using IDeployerLibrary for IDeployer;
 
     // TODO mine a deployer with Nick's Method
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
+
     function setUp() public {
         vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
         vm.warp(START_TIME);
@@ -30,12 +31,21 @@ contract DeploymentTest is Test {
         address initCode = makeAddr("initCode");
         vm.etch(initCode, type(Example).creationCode);
 
+        address holder;
+        uint96 expiry;
+
         assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        (holder, expiry) = DEPLOYER.reservation(reserved);
+        assertEq(holder, address(0));
+        assertEq(expiry, 0);
 
         vm.prank(sender);
         DEPLOYER.reserve(reserved);
 
         assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        (holder, expiry) = DEPLOYER.reservation(reserved);
+        assertEq(holder, sender);
+        assertEq(expiry, vm.getBlockTimestamp() + DAY);
 
         vm.expectRevert(IDeployer.Reserved.selector);
         DEPLOYER.reserve(reserved);
@@ -52,6 +62,9 @@ contract DeploymentTest is Test {
         DEPLOYER.reveal(reserved, salt);
 
         assertEq(DEPLOYER.ownerOf(reserved), sender);
+        (holder, expiry) = DEPLOYER.reservation(reserved);
+        assertEq(holder, sender);
+        assertEq(expiry, 0);
 
         vm.expectRevert(IDeployer.NotOwner.selector);
         DEPLOYER.deploy(reserved, initCode);
@@ -67,18 +80,21 @@ contract DeploymentTest is Test {
         address recipient = makeAddr("recipient");
 
         vm.expectRevert(IDeployer.NotOwner.selector);
-        DEPLOYER.call{value:1 ether}(reserved, abi.encodeWithSelector(Example.pay.selector, recipient));
+        DEPLOYER.call{value: 1 ether}(reserved, abi.encodeWithSelector(Example.pay.selector, recipient));
 
         assertEq(recipient.balance, 0);
 
         vm.deal(sender, 1 ether);
         vm.prank(sender);
-        DEPLOYER.call{value:1 ether}(reserved, abi.encodeWithSelector(Example.pay.selector, recipient));
+        DEPLOYER.call{value: 1 ether}(reserved, abi.encodeWithSelector(Example.pay.selector, recipient));
 
         assertEq(recipient.balance, 1 ether);
         assertEq(reserved.balance, 0);
         assertEq(sender.balance, 0);
         assertEq(DEPLOYER.ownerOf(reserved), sender);
+        (holder, expiry) = DEPLOYER.reservation(reserved);
+        assertEq(holder, sender);
+        assertEq(expiry, 0);
     }
 
     function testDispute() public {

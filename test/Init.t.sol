@@ -5,7 +5,6 @@ import {Example} from "./Example.sol";
 import {Test} from "forge-std/Test.sol";
 
 contract InitTest is Test {
-
     // there are multiple assumptions that Init.evm is 32 bytes
     function testInitSize() public view {
         bytes memory initCode = vm.getDeployedCode("out/Init.evm/Init.json");
@@ -25,13 +24,13 @@ contract InitTest is Test {
     }
 
     function setTarget(address target) internal {
-        assembly("memory-safe") {
+        assembly ("memory-safe") {
             sstore(0, target)
         }
     }
 
     fallback() external payable {
-        assembly("memory-safe") {
+        assembly ("memory-safe") {
             mstore(0, sload(0))
             return(0, 32)
         }

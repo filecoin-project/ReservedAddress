@@ -2,7 +2,8 @@
 //  0x0XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: owner[address]: [pendingClaimTime12, owner20]
 //  0x1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: salt[address]
 //  0x2XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: getApproved[address]
-// >0x2ffffffffffffffffffffffffffffffffffffffff: isApprovedForAll<owner ++ operator>
+//  0x3XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: balanceOf[address]
+// >0x3ffffffffffffffffffffffffffffffffffffffff: isApprovedForAll<owner ++ operator>
 
 
 JUMPI(table, CALLDATASIZE)
@@ -37,6 +38,7 @@ SHR(128, CALLDATALOAD(MSIZE)) // method
 // 0xc87b56dd tokenURI(uint256)
 // 0xe75179a4 reserve(address)
 // 0xe985e9c5 isApprovedForAll(address,address)
+// 0xef964f3b reservation(address)
 // 0xf75f9f7b dispute(address)
 
 
@@ -53,6 +55,7 @@ REVERT(0, MSIZE)
 gta:
 JUMPI(reserve, EQ(0xe75179a4000000000000000000000000, DUP1))
 JUMPI(dispute, EQ(0xf75f9f7b000000000000000000000000, DUP1))
+JUMPI(reservation, EQ(0xef964f3b000000000000000000000000, DUP1))
 JUMPI(tokenuri, EQ(0xc87b56dd000000000000000000000000, DUP1))
 REVERT(0, MSIZE)
 
@@ -108,11 +111,18 @@ JUMPI(accessdenied, XOR(CALLER, SLOAD(DUP1)))
 CALLDATACOPY(0, 100, DUP2)
 CALL(GAS, DUP6, CALLVALUE, 0, DUP4, 0, MSIZE)
 RETURNDATACOPY(0, 0, RETURNDATASIZE)
-success JUMPI
+callsuccess JUMPI
 REVERT(0, RETURNDATASIZE)
 
-success:
+callsuccess:
 RETURN(0, RETURNDATASIZE)
+
+reservation:
+SLOAD(CALLDATALOAD(4))
+MSTORE(MSIZE, AND(0xffffffffffffffffffffffffffffffffffffffff, DUP1))
+160 SHR
+MSTORE(MSIZE, MUL(ADD(86400, DUP2), ISZERO(ISZERO(DUP1))))
+RETURN(0, MSIZE)
 
 reserve:
 // reserve(address)

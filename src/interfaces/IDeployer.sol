@@ -4,10 +4,13 @@ pragma solidity ^0.8.36;
 interface IDeployer {
     // Permissioned
     error NotOwner();
-    function deploy(address reserved, address initCode) external;
-    function call(address deployed, bytes calldata callData) external payable /*returns (raw_bytes)*/;
+    function deploy(address owned, address initCode) external;
+    function call(address deployed, bytes calldata callData) external payable /*returns (raw_bytes)*/ ;
 
     // Registration
+
+    function reservation(address reserved) external view returns (address holder, uint96 expiry);
+
     error Reserved();
     function reserve(address reserved) external;
     error BadSalt();
@@ -40,6 +43,6 @@ interface IDeployer {
 
     // IERC721Enumerable
     // tokenOfOwnerByIndex is not supported
-    function totalSupply() external view returns (uint256);
+    function totalSupply() external pure returns (uint256);
     function tokenByIndex(uint256 index) external view returns (uint256);
 }
