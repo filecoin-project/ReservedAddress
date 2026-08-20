@@ -11,7 +11,7 @@
             },
             {
                 "name": "setApprovalForAll to true",
-                "gasUsed": "0xb266",
+                "gasUsed": "0xb260",
                 "from": "0xaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae",
                 "input": "0xa22cb465000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd0000000000000000000000000000000000000000000000000000000000000001",
                 "output": "0x",
@@ -37,7 +37,7 @@
             },
             {
                 "name": "setApprovalForAll to false",
-                "gasUsed": "0x5cce",
+                "gasUsed": "0x5cc8",
                 "from": "0xaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae",
                 "input": "0xa22cb465000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd0000000000000000000000000000000000000000000000000000000000000000",
                 "output": "0x",

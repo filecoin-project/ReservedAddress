@@ -76,17 +76,26 @@ dispute:
 OR(CALLER, SHL(160, TIMESTAMP)) // next_expiring_pending_owner
 CALLDATALOAD(4)
 SHR(160, SLOAD(DUP1)) // when claimed
-JUMPI(disputechecktime, DUP1)
-// fallthrough to accessdenied
 
-accessdenied:
-// error NotOwner()
-MSTORE(0, 0x30cd7471)
-REVERT(28, 4)
+// stack is: next_expiring_pending_owner target claim.time
+
+// claimtime == 0 or now - day < claim.time
+LT(SUB(TIMESTAMP, 86400), DUP1) // expiry of 1 day
+SWAP1 ISZERO
+JUMPI(reserved, OR)
+
+// stack is: next_expiring_pending_owner target
+SSTORE
+STOP
 
 reserved:
 // error Reserved()
 MSTORE(0, 0xfaf3f41e)
+REVERT(28, 4)
+
+accessdenied:
+// error NotOwner()
+MSTORE(0, 0x30cd7471)
 REVERT(28, 4)
 
 deploy:
@@ -94,7 +103,7 @@ deploy:
 
 // check owner
 0
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4)) // target
+CALLDATALOAD(4) // target
 JUMPI(accessdenied, XOR(CALLER, SLOAD(DUP1)))
 
 // prepare getcode
@@ -134,15 +143,8 @@ RETURN(0, MSIZE)
 reserve:
 // reserve(address)
 OR(CALLER, SHL(160, TIMESTAMP))  // expiring_pending_owner
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))  // target
+CALLDATALOAD(4)  // target
 JUMPI(reserved, SLOAD(DUP1))
-SSTORE
-STOP
-
-disputechecktime:
-// stack is: next_expiring_pending_owner target claimtime
-SUB(TIMESTAMP, 86400) // expiry of 1 day
-JUMPI(reserved, LT)
 SSTORE
 STOP
 
@@ -238,7 +240,7 @@ RETURN(0, MSIZE)
 
 getapproved:
 // getApproved(uint256)
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))
+CALLDATALOAD(4)
 
 JUMPI(getapprovedvalidtoken, MUL(ISZERO(SHR(160, DUP1)), SLOAD(DUP1)))
 REVERT(0, 0)
@@ -251,7 +253,7 @@ RETURN(0, MSIZE)
 approve:
 // approve(address, uint256)
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // tokenId
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4)) // operator
+CALLDATALOAD(4) // operator
 SLOAD(DUP2) // reservation
 JUMPI(approveauthorized, EQ(CALLER, DUP1)) // caller is owner
 JUMPI(accessdenied, SHR(160, DUP1))
@@ -278,7 +280,7 @@ setapprovalforall:
 // setApprovalForAll(address, bool)
 ISZERO(ISZERO(CALLDATALOAD(36)))
 MSTORE(0, DUP1)
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))
+CALLDATALOAD(4)
 LOG3(0, MSIZE, 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31, CALLER, DUP1)
 20 MSTORE
 MSTORE(0, CALLER)
