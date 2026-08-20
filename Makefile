@@ -6,19 +6,22 @@ build:
 clean:
 	rm -rf out
 
-test: build
+test: build lib/evm/bin/evm
 	make -C lib/evm check
-	@for f in test/dio/*.json; do echo "\n$$f:"; evm -w "$$f" || exit 1; done
+	@for f in test/dio/*.json; do echo "\n$$f:"; lib/evm/bin/evm -w "$$f" || exit 1; done
 	forge test
+
+lib/evm/bin/evm: lib/evm/Makefile
+	make -C lib/evm
 
 define ASM_ARTIFACT
 build: out/$(1).evm/$(1).json
-out/$(1).evm/$(1).json: src/$(1).evm
+out/$(1).evm/$(1).json: src/$(1).evm lib/evm/bin/evm
 	mkdir -p out/$(1).evm
 ifneq (,$(findstring constructor,$(1)))
-	jq -n --arg b "0x$$$$(evm $$<)" '{ bytecode: { object: $$$$b } }' > $$@
+	jq -n --arg b "0x$$$$(lib/evm/bin/evm $$<)" '{ bytecode: { object: $$$$b } }' > $$@
 else
-	jq -n --arg b "0x$$$$(evm -c $$<)" --arg d "0x$$$$(evm $$<)" '{ bytecode: { object: $$$$b }, deployedBytecode: { object: $$$$d } }' > $$@
+	jq -n --arg b "0x$$$$(lib/evm/bin/evm -c $$<)" --arg d "0x$$$$(lib/evm/bin/evm $$<)" '{ bytecode: { object: $$$$b }, deployedBytecode: { object: $$$$d } }' > $$@
 endif
 endef
 
