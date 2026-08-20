@@ -52,7 +52,6 @@
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             },
             {
-                "debug": "0x5f",
                 "gasUsed": "0x94dc",
                 "name": "safeTransferFrom with data when approved",
                 "from": "0x2323232323232323232323232323232323232323",
