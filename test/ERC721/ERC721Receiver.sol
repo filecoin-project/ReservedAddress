@@ -5,12 +5,22 @@ import {IERC721TokenReceiver} from "../../src/interfaces/IERC721TokenReceiver.so
 
 contract ERC721Receiver is IERC721TokenReceiver {
     bytes32 expectedHash;
+    bytes4 selector;
 
     error WrongData(bytes actual);
+
+    constructor() {
+        selector = IERC721TokenReceiver.onERC721Received.selector;
+    }
 
     // @dev use this to force revert
     function setExpectedData(bytes calldata expectedData) external {
         expectedHash = keccak256(expectedData);
+    }
+
+    // @dev use this to successfully return the wrong selector
+    function setSelector(bytes4 wrongSelector) external {
+        selector = wrongSelector;
     }
 
     // @dev use this to check the parameters
@@ -22,6 +32,6 @@ contract ERC721Receiver is IERC721TokenReceiver {
     {
         emit Received(operator, from, tokenId, data);
         require(keccak256(data) == expectedHash, WrongData(data));
-        return IERC721TokenReceiver.onERC721Received.selector;
+        return selector;
     }
 }

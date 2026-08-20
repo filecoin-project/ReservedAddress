@@ -78,4 +78,48 @@ contract SafeTransferTest is Test {
         emit IERC721.Transfer(origin, address(receiver), token1);
         DEPLOYER.safeTransferFrom(origin, address(receiver), token1, lorem);
     }
+
+    function testSafeTransferRevert() public {
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        receiver.setExpectedData("abcd");
+        bytes memory actual = "egfh";
+
+        vm.expectRevert(abi.encodeWithSelector(ERC721Receiver.WrongData.selector, actual));
+        vm.prank(approved);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1, actual);
+    }
+
+    function testSafeTransferWrongSelector() public {
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        receiver.setExpectedData("abcd");
+        receiver.setSelector(IERC721.ownerOf.selector);
+
+        vm.expectRevert(IDeployer.ERC721TokenReceiverRejected.selector);
+        vm.prank(approved);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1, "abcd");
+
+        receiver.setExpectedData("");
+
+        vm.expectRevert(IDeployer.ERC721TokenReceiverRejected.selector);
+        vm.prank(approved);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1);
+    }
 }
