@@ -38,7 +38,7 @@ contract SafeTransferTest is Test {
     function testSafeTransferAccepted() public {
         address origin = makeAddr("origin");
         address approved = makeAddr("approved");
-        
+
         uint256 token1 = mint(SALT1, origin);
 
         vm.prank(origin);
@@ -54,5 +54,28 @@ contract SafeTransferTest is Test {
         vm.expectEmit(address(DEPLOYER));
         emit IERC721.Transfer(origin, address(receiver), token1);
         DEPLOYER.safeTransferFrom(origin, address(receiver), token1);
+    }
+
+    function testSafeTransferData() public {
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        bytes memory lorem =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        receiver.setExpectedData(lorem);
+
+        vm.prank(approved);
+        vm.expectEmit(address(receiver));
+        emit ERC721Receiver.Received(approved, origin, token1, lorem);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Transfer(origin, address(receiver), token1);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1, lorem);
     }
 }

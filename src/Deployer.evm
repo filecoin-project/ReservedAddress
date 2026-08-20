@@ -360,28 +360,27 @@ tokenreceiver:
 
 // ERC721TokenReceiver(to).onERC721Received(operator, from, tokenId, data)
 4 28 // output
-164 // input size
 MSTORE(0, 0x150b7a02)
 MSTORE(32, CALLER)
-MSTORE(MSIZE, DUP4)
-MSTORE(MSIZE, DUP6)
+MSTORE(MSIZE, DUP3)
+MSTORE(MSIZE, DUP5)
 MSTORE(MSIZE, MSIZE)
 
-JUMPI(tokenreceiverdatacopy, EQ(DUP7, 0xb88d4fde000000000000000000000000))
+JUMPI(tokenreceiverdatacopy, EQ(0xb88d4fde000000000000000000000000, DUP6))
 
+164 // input size
 
 JUMP(calltokenreceiver)
 
 tokenreceiverdatacopy:
-
 // 0xb88d4fde safeTransferFrom(address,address,uint256,bytes)
-CALLDATALOAD(100) // offset
-CALLDATALOAD(DUP1) // size
-MSTORE(MSIZE, DUP1)
-DUP1 SWAP2
-MSIZE CALLDATACOPY
 
-ADD // input size += data size
+ADD(4, CALLDATALOAD(100)) // offset
+ADD(32, CALLDATALOAD(DUP1)) // copysize with len
+DUP1 SWAP2
+MSIZE CALLDATACOPY // copy len and size
+
+132 ADD // input size
 
 calltokenreceiver:
 DUP2 0 DUP7 GAS

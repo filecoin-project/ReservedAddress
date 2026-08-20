@@ -2,7 +2,6 @@
 pragma solidity ^0.8.36;
 
 interface IDeployer {
-
     error InvalidAddress();
     error ERC721TokenReceiverRejected();
     error NotOwner();
