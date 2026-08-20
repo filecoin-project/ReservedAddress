@@ -2,8 +2,14 @@
 pragma solidity ^0.8.36;
 
 interface IDeployer {
-    // Permissioned
+
+    error InvalidAddress();
+    error ERC721TokenReceiverRejected();
     error NotOwner();
+    error Reserved();
+    error BadSalt();
+
+    // Permissioned
     function deploy(address owned, address initCode) external payable;
     function call(address deployed, bytes calldata callData) external payable /*returns (raw_bytes)*/ ;
 
@@ -11,9 +17,7 @@ interface IDeployer {
 
     function reservation(address reserved) external view returns (address holder, uint96 expiry);
 
-    error Reserved();
     function reserve(address reserved) external;
-    error BadSalt();
     function reveal(address reserved, bytes32 salt) external;
     function dispute(address reserved) external;
 
@@ -21,8 +25,6 @@ interface IDeployer {
     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
-    error InvalidAddress();
 
     function balanceOf(address owner) external view returns (uint256 balance);
     function ownerOf(uint256 tokenId) external view returns (address owner);

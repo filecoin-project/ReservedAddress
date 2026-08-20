@@ -47,6 +47,7 @@ JUMPI(call, EQ(0x1b8b921d000000000000000000000000, DUP1))
 JUMPI(deploy, EQ(0x545e7c61000000000000000000000000, DUP1))
 JUMPI(reveal, EQ(0x5a628525000000000000000000000000, DUP1))
 JUMPI(approve, EQ(0x095ea7b3000000000000000000000000, DUP1))
+JUMPI(transferfrom, EQ(0x42842e0e000000000000000000000000, DUP1))
 JUMPI(transferfrom, EQ(0x23b872dd000000000000000000000000, DUP1))
 JUMPI(ownerof, EQ(0x6352211e000000000000000000000000, DUP1))
 JUMPI(getapproved, EQ(0x081812fc000000000000000000000000, DUP1))
@@ -62,6 +63,7 @@ gta:
 JUMPI(reserve, EQ(0xe75179a4000000000000000000000000, DUP1))
 JUMPI(dispute, EQ(0xf75f9f7b000000000000000000000000, DUP1))
 JUMPI(setapprovalforall, EQ(0xa22cb465000000000000000000000000, DUP1))
+JUMPI(transferfrom, EQ(0xb88d4fde000000000000000000000000, DUP1))
 JUMPI(isapprovedforall, EQ(0xe985e9c5000000000000000000000000, DUP1))
 JUMPI(reservation, EQ(0xef964f3b000000000000000000000000, DUP1))
 JUMPI(tokenuri, EQ(0xc87b56dd000000000000000000000000, DUP1))
@@ -293,6 +295,8 @@ STOP
 
 transferfrom:
 // transferFrom(address from, address to, uint256 tokenId)
+// safeTransferFrom(address from, address to, uint256 tokenId)
+// safeTransferFrom(address from, address to, uint256 tokenId, bytes data)
 
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(68)) // tokenId
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // recipient
@@ -308,10 +312,11 @@ JUMPI(dotransfer,
 MSTORE(20, CALLER)
 MSTORE(0, DUP1)
 JUMPI(
-    dotransfer,
-    SLOAD(ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(12, 40), 0xfffffffffffffffffffffffc0000000000000000000000000000000000000000))) // isApprovedForAll
+    accessdenied,
+    ISZERO(
+        SLOAD(ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(12, 40), 0xfffffffffffffffffffffffc0000000000000000000000000000000000000000)))
+    ) // !isApprovedForAll[owner ++ msg.sender]
 )
-JUMP(accessdenied)
 
 dotransfer:
 // stack is: tokenId recipient owner
@@ -334,10 +339,60 @@ SUB(SLOAD(DUP2), 1)
 SWAP1
 SSTORE
 
+// 0x23b872dd transferFrom(address,address,uint256)
+JUMPI(emittransfer, EQ(0x23b872dd000000000000000000000000, DUP4))
+JUMPI(tokenreceiver, EXTCODESIZE(DUP2))
+
+emittransfer:
+// stack is: tokenId recipient owner
+
 // emit Transfer(from, to, tokenId)
 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef 0 0 LOG4
 
 STOP
+
+tokenreceiver:
+
+// 0x42842e0e safeTransferFrom(address,address,uint256)
+// 0xb88d4fde safeTransferFrom(address,address,uint256,bytes)
+
+// stack is: tokenId recipient owner
+
+// ERC721TokenReceiver(to).onERC721Received(operator, from, tokenId, data)
+4 28 // output
+MSTORE(0, 0x150b7a02)
+MSTORE(32, CALLER)
+MSTORE(MSIZE, DUP3)
+MSTORE(MSIZE, DUP5)
+MSTORE(MSIZE, MSIZE)
+
+JUMPI(tokenreceiverdatacopy, EQ(DUP6, 0xb88d4fde000000000000000000000000))
+
+164 // input size
+
+JUMP(calltokenreceiver)
+
+tokenreceiverdatacopy:
+
+// 0xb88d4fde safeTransferFrom(address,address,uint256,bytes)
+CALLDATALOAD(100) // offset
+CALLDATALOAD(DUP1) // size
+MSTORE(MSIZE, DUP1)
+DUP1 SWAP2
+MSIZE CALLDATACOPY
+
+164 ADD // input size
+
+calltokenreceiver:
+DUP2 0 DUP7 GAS
+JUMPI(checkret, CALL)
+RETURNDATACOPY(0, 0, RETURNDATASIZE)
+REVERT(0, RETURNDATASIZE)
+
+checkret:
+JUMPI(emittransfer, EQ(MLOAD(0), 0x150b7a02))
+MSTORE(0, 0x2971e53b)
+REVERT(28, 4)
 
 supportsinterface:
 // supportsInterface(bytes4)

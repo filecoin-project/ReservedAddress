@@ -5,7 +5,7 @@
         "tests": [
             {
                 "name": "isApprovedForAll initially false",
-                "gasUsed": "0x5e4b",
+                "gasUsed": "0x5e61",
                 "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             },
@@ -31,7 +31,7 @@
             },
             {
                 "name": "isApprovedForAll now true",
-                "gasUsed": "0x5e4b",
+                "gasUsed": "0x5e61",
                 "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000001"
             },
@@ -57,7 +57,7 @@
             },
             {
                 "name": "isApprovedForAll again false",
-                "gasUsed": "0x5e4b",
+                "gasUsed": "0x5e61",
                 "input": "0xe985e9c5000000000000000000000000aeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeaeae000000000000000000000000bdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbd",
                 "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
             }

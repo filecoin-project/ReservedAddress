@@ -7,7 +7,7 @@ import {LibClone} from "solady/utils/LibClone.sol";
 import {IDeployer} from "../../src/interfaces/IDeployer.sol";
 import {IERC721} from "../../src/interfaces/IERC721.sol";
 
-contract MetadataTest is Test {
+contract TransferTest is Test {
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     bytes32 initCodeHash;
@@ -21,6 +21,8 @@ contract MetadataTest is Test {
 
     function mint(bytes32 salt, address owner) internal returns (uint256 tokenId) {
         address reserved = LibClone.predictDeterministicAddress(initCodeHash, salt, address(DEPLOYER));
+        assertEq(DEPLOYER.ownerOf(tokenId), address(0));
+
         vm.prank(owner);
         DEPLOYER.reserve(reserved);
         vm.prank(owner);
