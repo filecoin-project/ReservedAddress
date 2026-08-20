@@ -5,7 +5,7 @@
         "tests": [
             {
                 "name": "reserve unclaimed address",
-                "gasUsed": "0xaa78",
+                "gasUsed": "0xaa7e",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
             },
@@ -18,7 +18,7 @@
             },
             {
                 "name": "reserve already-reserved address reverts Reserved",
-                "gasUsed": "0x5c6a",
+                "gasUsed": "0x5c70",
                 "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
                 "input": "0xe75179a4000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
                 "status": "0x0",
@@ -26,7 +26,7 @@
             },
             {
                 "name": "reserve address later disputed",
-                "gasUsed": "0xaa78",
+                "gasUsed": "0xaa7e",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0xe75179a4000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6"
             },
@@ -62,7 +62,7 @@
             },
             {
                 "name": "reserve address for reveal",
-                "gasUsed": "0xaa78",
+                "gasUsed": "0xaa7e",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0xe75179a400000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb2"
             },

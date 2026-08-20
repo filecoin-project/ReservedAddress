@@ -4,7 +4,7 @@ pragma solidity ^0.8.36;
 interface IDeployer {
     // Permissioned
     error NotOwner();
-    function deploy(address owned, address initCode) external;
+    function deploy(address owned, address initCode) external payable;
     function call(address deployed, bytes calldata callData) external payable /*returns (raw_bytes)*/ ;
 
     // Registration

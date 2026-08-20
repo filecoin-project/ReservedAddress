@@ -93,8 +93,8 @@ deploy:
 // deploy(address,address)
 
 // check owner
-CALLVALUE
-CALLDATALOAD(4) // target
+0
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4)) // target
 JUMPI(accessdenied, XOR(CALLER, SLOAD(DUP1)))
 
 // prepare getcode
@@ -134,7 +134,7 @@ RETURN(0, MSIZE)
 reserve:
 // reserve(address)
 OR(CALLER, SHL(160, TIMESTAMP))  // expiring_pending_owner
-CALLDATALOAD(4)  // target
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(4))  // target
 JUMPI(reserved, SLOAD(DUP1))
 SSTORE
 STOP
@@ -169,17 +169,16 @@ SWAP1 SSTORE
 
 SSTORE
 
-
 STOP
 
 setcodecheckcodesize:
-// stack is: 0 salt[target] target
+// stack is: 0 &salt[target] target
 JUMPI(cleanup, EXTCODESIZE)
 REVERT(0, MSIZE)
 
 cleanup:
+// stack is: 0 &salt[target]
 // cleanup salt
-0x10000000000000000000000000000000000000000 ADD
 SSTORE
 STOP
 

@@ -21,6 +21,12 @@ contract DeploymentTest is Test {
         vm.warp(START_TIME);
     }
 
+    // @dev there isn't a view method for the salt, but it can be checked this way
+    function getStoredSalt(address reserved) internal view returns (bytes32 salt) {
+        bytes32 slot = bytes32(0x010000000000000000000000000000000000000000 | uint256(uint160(reserved)));
+        return vm.load(address(DEPLOYER), slot);
+    }
+
     function testReserveRevealDeployCall() public {
         bytes32 salt = bytes32(0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef);
         bytes32 initCodeHash = keccak256(vm.getDeployedCode("out/Init.evm/Init.json"));
@@ -65,6 +71,8 @@ contract DeploymentTest is Test {
         vm.prank(sender);
         DEPLOYER.reveal(reserved, salt);
 
+        assertEq(getStoredSalt(reserved), salt);
+
         assertEq(DEPLOYER.balanceOf(sender), 1);
         assertEq(DEPLOYER.ownerOf(reserved), sender);
         (holder, expiry) = DEPLOYER.reservation(reserved);
@@ -78,6 +86,8 @@ contract DeploymentTest is Test {
         DEPLOYER.deploy(reserved, initCode);
 
         assertEq(reserved.code, type(Example).runtimeCode);
+        // salt was cleared from storage
+        assertEq(getStoredSalt(reserved), bytes32(0));
 
         Example deployed = Example(reserved);
         assertEq(deployed.owner(), address(DEPLOYER));
