@@ -46,4 +46,19 @@ contract MetadataTest is Test {
             "https://filecoin.blockscout.com/address/0x7cd807cd807cd807cd807cd807cd807cd807cd80"
         );
     }
+
+    function testTokenByIndex() public view {
+        assertEq(DEPLOYER.tokenByIndex(0), 0);
+        assertEq(DEPLOYER.tokenByIndex(1), 1);
+        assertEq(
+            DEPLOYER.tokenByIndex(0x009a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a),
+            0x009a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a9a
+        );
+        assertEq(DEPLOYER.tokenByIndex(2 ** 160 - 1), 2 ** 160 - 1);
+    }
+
+    function testTokenByIndexOutOfRange() public {
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.tokenByIndex(2 ** 160);
+    }
 }
