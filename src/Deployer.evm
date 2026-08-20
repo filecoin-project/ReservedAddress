@@ -15,7 +15,7 @@ RETURN(0, MSIZE)
 table:
 SHR(128, CALLDATALOAD(MSIZE)) // method
 
-// assert that first arg is valid address
+// shifting only 128 lets us assert that the first arg is valid address for free
 
 // binary search:
 
@@ -47,6 +47,7 @@ JUMPI(call, EQ(0x1b8b921d000000000000000000000000, DUP1))
 JUMPI(deploy, EQ(0x545e7c61000000000000000000000000, DUP1))
 JUMPI(reveal, EQ(0x5a628525000000000000000000000000, DUP1))
 JUMPI(approve, EQ(0x095ea7b3000000000000000000000000, DUP1))
+JUMPI(transferfrom, EQ(0x23b872dd000000000000000000000000, DUP1))
 JUMPI(ownerof, EQ(0x6352211e000000000000000000000000, DUP1))
 JUMPI(getapproved, EQ(0x081812fc000000000000000000000000, DUP1))
 JUMPI(balanceof, EQ(0x70a08231000000000000000000000000, DUP1))
@@ -229,6 +230,8 @@ balanceof:
 // balanceOf(address)
 CALLDATALOAD(4)
 JUMPI(balanceofvalid, DUP1)
+
+invalidaddress:
 // error InvalidAddress()
 MSTORE(0, 0xe6c4247b)
 REVERT(28, 4)
@@ -286,6 +289,54 @@ LOG3(0, MSIZE, 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c3
 MSTORE(0, CALLER)
 ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(12, 40), 0xfffffffffffffffffffffffc0000000000000000000000000000000000000000))
 SSTORE
+STOP
+
+transferfrom:
+// transferFrom(address from, address to, uint256 tokenId)
+
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(68)) // tokenId
+AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // recipient
+JUMPI(invalidaddress, ISZERO(DUP1))
+SLOAD(DUP2) // owner
+
+JUMPI(accessdenied, SHR(160, DUP1)) // token is reserved but unowned
+JUMPI(accessdenied, XOR(CALLDATALOAD(4), DUP1)) // from must be owner
+JUMPI(dotransfer, EQ(CALLER, DUP1))
+JUMPI(dotransfer,
+    EQ(CALLER, SLOAD(OR(0x20000000000000000000000000000000000000000, DUP3)))  // getApproved[tokenId] == msg.sender
+)
+MSTORE(20, CALLER)
+MSTORE(0, DUP1)
+JUMPI(
+    dotransfer,
+    SLOAD(ADD(0x40000000000000000000000000000000000000000, MOD(SHA3(12, 40), 0xfffffffffffffffffffffffc0000000000000000000000000000000000000000))) // isApprovedForAll
+)
+JUMP(accessdenied)
+
+dotransfer:
+// stack is: tokenId recipient owner
+
+// delete getApproved[tokenId]
+SSTORE(OR(0x20000000000000000000000000000000000000000, DUP4), 0)
+
+// ownerOf[tokenId] = recipient
+SSTORE(DUP4, DUP2)
+
+// balanceOf[recipient] += 1
+OR(0x30000000000000000000000000000000000000000, DUP2)
+ADD(1, SLOAD(DUP1))
+SWAP1
+SSTORE
+
+// balanceOf[owner] -= 1
+OR(0x30000000000000000000000000000000000000000, DUP1)
+SUB(SLOAD(DUP2), 1)
+SWAP1
+SSTORE
+
+// emit Transfer(from, to, tokenId)
+0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef 0 0 LOG4
+
 STOP
 
 supportsinterface:

@@ -30,6 +30,31 @@ contract MetadataTest is Test {
         assertEq(DEPLOYER.ownerOf(tokenId), owner);
     }
 
+    function testOwnerTransfer() public {
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+        address recipient = makeAddr("recipient");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Approval(origin, approved, token1);
+        DEPLOYER.approve(approved, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), approved);
+        assertEq(DEPLOYER.balanceOf(origin), 1);
+        assertEq(DEPLOYER.balanceOf(recipient), 0);
+
+        vm.prank(origin);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Transfer(origin, recipient, token1);
+        DEPLOYER.transferFrom(origin, recipient, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+        assertEq(DEPLOYER.balanceOf(origin), 0);
+        assertEq(DEPLOYER.balanceOf(recipient), 1);
+    }
+
     function testApproveTransfer() public {
         vm.expectRevert();
         DEPLOYER.getApproved(1);
@@ -71,11 +96,23 @@ contract MetadataTest is Test {
         DEPLOYER.approve(approved, token1);
 
         assertEq(DEPLOYER.getApproved(token1), approved);
+        assertEq(DEPLOYER.balanceOf(origin), 1);
+        assertEq(DEPLOYER.balanceOf(recipient), 0);
+
+        vm.prank(approved);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Transfer(origin, recipient, token1);
+        DEPLOYER.transferFrom(origin, recipient, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+        assertEq(DEPLOYER.balanceOf(origin), 0);
+        assertEq(DEPLOYER.balanceOf(recipient), 1);
     }
 
     function testApproveForAllTransfer() public {
         address origin = makeAddr("origin");
         address operator = makeAddr("operator");
+        address approved = makeAddr("approved");
         address recipient = makeAddr("recipient");
 
         uint256 token1 = mint(SALT1, origin);
@@ -88,5 +125,21 @@ contract MetadataTest is Test {
         DEPLOYER.setApprovalForAll(operator, true);
 
         assertTrue(DEPLOYER.isApprovedForAll(origin, operator));
+
+        vm.prank(origin);
+        DEPLOYER.approve(approved, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), approved);
+        assertEq(DEPLOYER.balanceOf(origin), 1);
+        assertEq(DEPLOYER.balanceOf(recipient), 0);
+
+        vm.prank(operator);
+        vm.expectEmit(address(DEPLOYER));
+        emit IERC721.Transfer(origin, recipient, token1);
+        DEPLOYER.transferFrom(origin, recipient, token1);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+        assertEq(DEPLOYER.balanceOf(origin), 0);
+        assertEq(DEPLOYER.balanceOf(recipient), 1);
     }
 }

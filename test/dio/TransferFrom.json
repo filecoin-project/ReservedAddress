@@ -1,0 +1,47 @@
+[
+    {
+        "address": "0x000000000000c57CF0A1f923d44527e703F1ad70",
+        "construct": "src/Deployer.evm",
+        "storage": {
+                "0xabababababababababababababababababababab": "0x1111111111111111111111111111111111111111",
+                "0x2abababababababababababababababababababab": "0x2323232323232323232323232323232323232323",
+                "0x31111111111111111111111111111111111111111": "0x1"
+        },
+        "tests": [
+            {
+                "name": "transferFrom when approved",
+                "from": "0x2323232323232323232323232323232323232323",
+                "input": "0x23b872dd00000000000000000000000011111111111111111111111111111111111111110000000000000000000000004545454545454545454545454545454545454545000000000000000000000000abababababababababababababababababababab",
+                "logs": {
+                    "0x000000000000c57CF0A1f923d44527e703F1ad70": [
+                        {
+                            "logIndex": "0x0",
+                            "data": "0x",
+                            "topics": [
+                                "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                                "0x1111111111111111111111111111111111111111",
+                                "0x4545454545454545454545454545454545454545",
+                                "0xabababababababababababababababababababab"
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "balanceOf recipient now 1",
+                "input": "0x70a082310000000000000000000000004545454545454545454545454545454545454545",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000001"
+            },
+            {
+                "name": "balanceOf sender now 0",
+                "input": "0x70a082310000000000000000000000001111111111111111111111111111111111111111",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            {
+                "name": "getApproved was deleted",
+                "input": "0x081812fc000000000000000000000000abababababababababababababababababababab",
+                "output": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            }
+        ]
+    }
+]
