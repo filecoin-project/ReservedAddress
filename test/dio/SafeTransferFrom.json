@@ -22,7 +22,6 @@
                 "logs": {
                     "0x000000000000c57CF0A1f923d44527e703F1ad70": [
                         {
-                            "logIndex": "0x0",
                             "data": "0x",
                             "topics": [
                                 "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
@@ -60,7 +59,6 @@
                 "logs": {
                     "0x000000000000c57CF0A1f923d44527e703F1ad70": [
                         {
-                            "logIndex": "0x0",
                             "data": "0x",
                             "topics": [
                                 "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
