@@ -1,30 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 pragma solidity ^0.8.36;
 
-import {Example} from "./Example.sol";
 import {Test} from "forge-std/Test.sol";
 
-contract ConstructorProbe {
-    address public immutable deployedAt;
-    address public immutable constructorCaller;
-    uint256 public immutable constructorValue;
-    uint256 public storedValue;
-
-    constructor(uint256 value) payable {
-        deployedAt = address(this);
-        constructorCaller = msg.sender;
-        constructorValue = msg.value;
-        storedValue = value;
-    }
-}
-
-contract RevertingConstructor {
-    error ExpectedRevert(uint256 value);
-
-    constructor() {
-        revert ExpectedRevert(42);
-    }
-}
+import {ConstructorProbe} from "./ConstructorProbe.sol";
+import {Example} from "./Example.sol";
+import {RevertingConstructor} from "./RevertingConstructor.sol";
 
 contract InitTest is Test {
     bytes constant INIT_CODE = hex"385f5f5f335afa5f5f5f5f5f515af43d5f5f3e16601a573d5ffd5b3d5ff30000";
@@ -57,13 +38,13 @@ contract InitTest is Test {
 
         (bool success, bytes memory returned) = init.call{value: 7}("");
         assertTrue(success);
-        assertGt(returned.length, 0);
+        assertEq(returned.length, vm.getDeployedCode("ConstructorProbe").length);
 
         vm.etch(init, returned);
         ConstructorProbe probe = ConstructorProbe(init);
-        assertEq(probe.deployedAt(), init);
-        assertEq(probe.constructorCaller(), address(this));
-        assertEq(probe.constructorValue(), 7);
+        assertEq(probe.DEPLOYED_AT(), init);
+        assertEq(probe.CALLER(), address(this));
+        assertEq(probe.CALLVALUE(), 7);
         assertEq(probe.storedValue(), 42);
     }
 

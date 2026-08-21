@@ -76,7 +76,7 @@ contract DeploymentTest is Test {
         vm.prank(owner);
         DEPLOYER.deploy{value: 1 ether}(reserved, initCode);
 
-        assertEq(PayableExample(reserved).constructorValue(), 1 ether);
+        assertEq(PayableExample(reserved).CALLVALUE(), 1 ether);
         assertEq(reserved.balance, 1 ether);
         assertEq(address(DEPLOYER).balance, 2 ether);
     }

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.36;
 
 contract PayableExample {
-    uint256 public immutable constructorValue;
+    uint256 public immutable CALLVALUE;
 
     constructor() payable {
-        constructorValue = msg.value;
+        CALLVALUE = msg.value;
     }
 }
