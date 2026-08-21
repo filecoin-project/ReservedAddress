@@ -1,4 +1,4 @@
-.PHONY: build clean test
+.PHONY: build clean test abi
 
 build:
 	forge build
@@ -16,6 +16,8 @@ lib/evm/bin/evm: lib/evm/Makefile
 
 Deployer.abi.json: out/IDeployer.sol/IDeployer.json
 	jq .abi $< > $@
+
+abi: Deployer.abi.json
 
 out/IDeployer.sol/IDeployer.json: src/interfaces/IDeployer.sol
 	forge build $<
