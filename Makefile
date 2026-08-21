@@ -14,6 +14,12 @@ test: build lib/evm/bin/evm
 lib/evm/bin/evm: lib/evm/Makefile
 	make -C lib/evm
 
+Deployer.abi.json: out/IDeployer.sol/IDeployer.json
+	jq .abi $< > $@
+
+out/IDeployer.sol/IDeployer.json: src/interfaces/IDeployer.sol
+	forge build $<
+
 define ASM_ARTIFACT
 build: out/$(1).evm/$(1).json
 out/$(1).evm/$(1).json: src/$(1).evm lib/evm/bin/evm
