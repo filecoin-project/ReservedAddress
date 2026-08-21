@@ -13,6 +13,7 @@ contract TransferTest is Test {
     bytes32 initCodeHash;
 
     bytes32 constant SALT1 = 0x1234123412341234123412341234123412341234123412341234123412341234;
+    bytes32 constant SALT2 = bytes32(uint256(2));
 
     function setUp() public {
         vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
@@ -56,6 +57,12 @@ contract TransferTest is Test {
         assertEq(DEPLOYER.getApproved(token1), address(0));
         assertEq(DEPLOYER.balanceOf(origin), 0);
         assertEq(DEPLOYER.balanceOf(recipient), 1);
+    }
+
+    function testOwnerOfEvenAddress() public {
+        address owner = address(2);
+        uint256 tokenId = mint(SALT2, owner);
+        assertEq(DEPLOYER.ownerOf(tokenId), owner);
     }
 
     function testApproveTransfer() public {

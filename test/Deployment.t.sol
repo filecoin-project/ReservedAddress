@@ -7,6 +7,7 @@ import {LibClone} from "solady/utils/LibClone.sol";
 import {IDeployer} from "../src/interfaces/IDeployer.sol";
 import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
 import {Example} from "./Example.sol";
+import {PayableExample} from "./PayableExample.sol";
 
 uint256 constant DAY = 24 * 60 * 60;
 uint256 constant START_TIME = 1787089200;
@@ -25,6 +26,59 @@ contract DeploymentTest is Test {
     function getStoredSalt(address reserved) internal view returns (bytes32 salt) {
         bytes32 slot = bytes32(0x010000000000000000000000000000000000000000 | uint256(uint160(reserved)));
         return vm.load(address(DEPLOYER), slot);
+    }
+
+    function reserveAddress(bytes32 salt, address owner) internal returns (address reserved) {
+        bytes32 initCodeHash = keccak256(vm.getDeployedCode("out/Init.evm/Init.json"));
+        reserved = LibClone.predictDeterministicAddress(initCodeHash, salt, address(DEPLOYER));
+        vm.startPrank(owner);
+        DEPLOYER.reserve(reserved);
+        DEPLOYER.reveal(reserved, salt);
+        vm.stopPrank();
+    }
+
+    function testFallbackRejectsValue() public {
+        address sender = makeAddr("sender");
+        vm.deal(sender, 1 ether);
+
+        vm.prank(sender);
+        (bool success, bytes memory returned) = address(DEPLOYER).call{value: 1 ether}("");
+
+        assertFalse(success);
+        assertEq(returned, abi.encodeWithSelector(IDeployer.UnexpectedValue.selector));
+        assertEq(address(DEPLOYER).balance, 0);
+        assertEq(sender.balance, 1 ether);
+    }
+
+    function testFactoryBalanceDoesNotBlockDeployment() public {
+        address owner = address(3);
+        address reserved = reserveAddress(bytes32(uint256(1)), owner);
+        address initCode = makeAddr("initCode");
+        vm.etch(initCode, type(Example).creationCode);
+        vm.deal(address(DEPLOYER), 1);
+
+        vm.prank(owner);
+        DEPLOYER.deploy(reserved, initCode);
+
+        assertEq(reserved.code, type(Example).runtimeCode);
+        assertEq(reserved.balance, 0);
+        assertEq(address(DEPLOYER).balance, 1);
+    }
+
+    function testDeployForwardsOnlyCallValue() public {
+        address owner = address(3);
+        address reserved = reserveAddress(bytes32(uint256(2)), owner);
+        address initCode = makeAddr("initCode");
+        vm.etch(initCode, type(PayableExample).creationCode);
+        vm.deal(address(DEPLOYER), 2 ether);
+        vm.deal(owner, 1 ether);
+
+        vm.prank(owner);
+        DEPLOYER.deploy{value: 1 ether}(reserved, initCode);
+
+        assertEq(PayableExample(reserved).constructorValue(), 1 ether);
+        assertEq(reserved.balance, 1 ether);
+        assertEq(address(DEPLOYER).balance, 2 ether);
     }
 
     function testReserveRevealDeployCall() public {

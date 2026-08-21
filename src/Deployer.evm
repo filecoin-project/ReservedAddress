@@ -7,9 +7,15 @@
 
 
 JUMPI(table, CALLDATASIZE)
+JUMPI(unexpectedvalue, CALLVALUE)
 // fallback: getcode
 MSTORE(MSIZE, TLOAD(CALLER))
 RETURN(0, MSIZE)
+
+unexpectedvalue:
+// error UnexpectedValue()
+MSTORE(0, 0x123146a6)
+REVERT(28, 4)
 
 
 table:
@@ -117,7 +123,7 @@ TSTORE(DUP2, CALLDATALOAD(36))
 PUSH32 { init: assemble src/Init.evm }
 0 MSTORE
 0x10000000000000000000000000000000000000000 ADD
-CREATE2(SELFBALANCE, 0, MSIZE, SLOAD(DUP1))
+CREATE2(CALLVALUE, 0, MSIZE, SLOAD(DUP1))
 JUMPI(setcodecheckcodesize, DUP1)
 
 // create failed
@@ -227,7 +233,7 @@ RETURN(0, 147)
 ownerof:
 // ownerOf(uint256)
 SLOAD(CALLDATALOAD(4))
-JUMPI(ownerofvalid, AND(DUP2, ISZERO(SHR(160, DUP1))))
+JUMPI(ownerofvalid, MUL(DUP2, ISZERO(SHR(160, DUP1))))
 // error InvalidAddress()
 MSTORE(0, 0xe6c4247b)
 REVERT(28, 4)
