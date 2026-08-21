@@ -7,11 +7,12 @@ The factory is fixed at `0x000000000000c57CF0A1f923d44527e703F1ad70`.
 Deploying the same factory there on multiple EVM chains makes a salt resolve to the same reserved address on each chain.
 
 The fixed factory address depends on replaying the same signed legacy transaction on each chain.
-Verify its signer, nonce, creation code, expected address, and deployed runtime code before relying on it.
+The legacy transaction hash must match on every chain.
+Verify it and the deployed runtime code before relying on the factory.
 
 ## How it works
 
-The reserved address depends only on the factory, a salt, and the factory's 32-byte deployment trampoline:
+The reserved address depends only on the factory, a salt, and the factory's 32-byte deployment [trampoline](https://en.wikipedia.org/wiki/Trampoline_(computing)):
 
 ```solidity
 address constant DEPLOYER = 0x000000000000c57CF0A1f923d44527e703F1ad70;

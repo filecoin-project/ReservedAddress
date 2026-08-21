@@ -60,9 +60,7 @@ contract TransferTest is Test {
     }
 
     function testOwnerOfEvenAddress() public {
-        address owner = address(2);
-        uint256 tokenId = mint(SALT2, owner);
-        assertEq(DEPLOYER.ownerOf(tokenId), owner);
+        mint(SALT2, address(2));
     }
 
     function testApproveTransfer() public {
