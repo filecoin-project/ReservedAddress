@@ -24,14 +24,15 @@ contract SafeTransferTest is Test {
 
     function mint(bytes32 salt, address owner) internal returns (uint256 tokenId) {
         address reserved = LibClone.predictDeterministicAddress(initCodeHash, salt, address(DEPLOYER));
-        assertEq(DEPLOYER.ownerOf(tokenId), address(0));
+        tokenId = uint256(uint160(reserved));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(tokenId);
 
         vm.prank(owner);
         DEPLOYER.reserve(reserved);
         vm.prank(owner);
         DEPLOYER.reveal(reserved, salt);
 
-        tokenId = uint256(uint160(reserved));
         assertEq(DEPLOYER.ownerOf(tokenId), owner);
     }
 
@@ -121,5 +122,60 @@ contract SafeTransferTest is Test {
         vm.expectRevert(IDeployer.ERC721TokenReceiverRejected.selector);
         vm.prank(approved);
         DEPLOYER.safeTransferFrom(origin, address(receiver), token1);
+    }
+
+    function testSafeTransferToZeroAddressReverts() public {
+        address origin = makeAddr("origin");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(origin, address(0), token1);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(origin, address(0), token1, "");
+    }
+
+    function testSafeTransferUnauthorizedReverts() public {
+        address origin = makeAddr("origin");
+        address stranger = makeAddr("stranger");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(stranger);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(stranger);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1, "");
+    }
+
+    function testSafeTransferFromMismatchReverts() public {
+        address origin = makeAddr("origin");
+        address impostor = makeAddr("impostor");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(impostor, address(receiver), token1);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(impostor, address(receiver), token1, "");
+    }
+
+    function testSafeTransferFromZeroAddressWhenUnownedReverts() public {
+        address unowned = makeAddr("unowned");
+        uint256 tokenId = uint256(uint160(unowned));
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(tokenId);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        DEPLOYER.safeTransferFrom(address(0), address(receiver), tokenId);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        DEPLOYER.safeTransferFrom(address(0), address(receiver), tokenId, "");
     }
 }

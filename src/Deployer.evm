@@ -226,7 +226,14 @@ RETURN(0, 147)
 
 ownerof:
 // ownerOf(uint256)
-MSTORE(MSIZE, MUL(ISZERO(SHR(160, DUP1)), SLOAD(CALLDATALOAD(4))))
+SLOAD(CALLDATALOAD(4))
+JUMPI(ownerofvalid, AND(DUP2, ISZERO(SHR(160, DUP1))))
+// error InvalidAddress()
+MSTORE(0, 0xe6c4247b)
+REVERT(28, 4)
+
+ownerofvalid:
+MSTORE(MSIZE, DUP1)
 RETURN(0, MSIZE)
 
 balanceof:

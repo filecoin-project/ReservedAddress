@@ -21,14 +21,15 @@ contract TransferTest is Test {
 
     function mint(bytes32 salt, address owner) internal returns (uint256 tokenId) {
         address reserved = LibClone.predictDeterministicAddress(initCodeHash, salt, address(DEPLOYER));
-        assertEq(DEPLOYER.ownerOf(tokenId), address(0));
+        tokenId = uint256(uint160(reserved));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(tokenId);
 
         vm.prank(owner);
         DEPLOYER.reserve(reserved);
         vm.prank(owner);
         DEPLOYER.reveal(reserved, salt);
 
-        tokenId = uint256(uint160(reserved));
         assertEq(DEPLOYER.ownerOf(tokenId), owner);
     }
 
@@ -143,5 +144,62 @@ contract TransferTest is Test {
         assertEq(DEPLOYER.getApproved(token1), address(0));
         assertEq(DEPLOYER.balanceOf(origin), 0);
         assertEq(DEPLOYER.balanceOf(recipient), 1);
+    }
+
+    function testTransferToZeroAddressReverts() public {
+        address origin = makeAddr("origin");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.transferFrom(origin, address(0), token1);
+    }
+
+    function testTransferUnauthorizedReverts() public {
+        address origin = makeAddr("origin");
+        address recipient = makeAddr("recipient");
+        address stranger = makeAddr("stranger");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(stranger);
+        DEPLOYER.transferFrom(origin, recipient, token1);
+    }
+
+    function testTransferFromMismatchReverts() public {
+        address origin = makeAddr("origin");
+        address impostor = makeAddr("impostor");
+        address recipient = makeAddr("recipient");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(origin);
+        DEPLOYER.transferFrom(impostor, recipient, token1);
+    }
+
+    function testTransferUnrevealedReservationReverts() public {
+        address reserver = makeAddr("reserver");
+        address recipient = makeAddr("recipient");
+        address reserved = makeAddr("pendingReserved");
+
+        vm.prank(reserver);
+        DEPLOYER.reserve(reserved);
+
+        uint256 tokenId = uint256(uint160(reserved));
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        vm.prank(reserver);
+        DEPLOYER.transferFrom(reserver, recipient, tokenId);
+    }
+
+    function testTransferFromZeroAddressWhenUnownedReverts() public {
+        address recipient = makeAddr("recipient");
+        address unowned = makeAddr("unowned");
+        uint256 tokenId = uint256(uint160(unowned));
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(tokenId);
+
+        vm.expectRevert(IDeployer.NotOwner.selector);
+        DEPLOYER.transferFrom(address(0), recipient, tokenId);
     }
 }

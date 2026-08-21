@@ -39,7 +39,8 @@ contract DeploymentTest is Test {
         address holder;
         uint96 expiry;
 
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
         (holder, expiry) = DEPLOYER.reservation(reserved);
         assertEq(holder, address(0));
         assertEq(expiry, 0);
@@ -50,7 +51,8 @@ contract DeploymentTest is Test {
         vm.prank(sender);
         DEPLOYER.reserve(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
         (holder, expiry) = DEPLOYER.reservation(reserved);
         assertEq(holder, sender);
         assertEq(expiry, vm.getBlockTimestamp() + DAY);
@@ -121,7 +123,8 @@ contract DeploymentTest is Test {
         address squatter = makeAddr("squatter");
         address disputer = makeAddr("disputer");
 
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
 
         address holder;
         uint96 expiry;
@@ -133,7 +136,8 @@ contract DeploymentTest is Test {
         vm.prank(squatter);
         DEPLOYER.reserve(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
 
         (holder, expiry) = DEPLOYER.reservation(reserved);
         assertEq(holder, squatter);
@@ -143,13 +147,15 @@ contract DeploymentTest is Test {
         vm.prank(disputer);
         DEPLOYER.dispute(reserved);
 
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
 
         skip(DAY);
 
         vm.prank(disputer);
         DEPLOYER.dispute(reserved);
-        assertEq(DEPLOYER.ownerOf(reserved), address(0));
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        DEPLOYER.ownerOf(reserved);
 
         (holder, expiry) = DEPLOYER.reservation(reserved);
         assertEq(holder, disputer);
