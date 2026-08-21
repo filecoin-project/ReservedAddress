@@ -17,7 +17,7 @@ The reserved address depends only on the factory, a salt, and the factory's 32-b
 ```solidity
 address constant DEPLOYER = 0x000000000000c57CF0A1f923d44527e703F1ad70;
 bytes32 constant INIT_CODE_HASH =
-    0xbcbbfadcc59d9dc57408c9c0b8c471bde38115ed725ac4bbe1308d01651d5d99;
+    0xbcbdfadcc59d9dc57408c9c0b8c471bde38115ed725ac4bbe1308d01651d5d99;
 
 address reserved = address(uint160(uint256(keccak256(abi.encodePacked(
     bytes1(0xff),
@@ -35,6 +35,41 @@ The ERC-721 owner supplies that code when deploying.
 1. Compute or mine a salt and its reserved address.
 2. Call `reserve(reserved)` from the account which will initially own it.
 3. Call `reveal(reserved, salt)` from the same account.
+
+To mine a salt for a vanity reserved address, use
+[1inch/1miner](https://github.com/1inch/1miner), a GPU-accelerated
+(OpenCL/Metal/CPU) vanity address miner descended from ERADICATE2 and
+ERADICATE3. It's the true successor to ERADICATE2: unlike ERADICATE3, which
+rewired itself around 1inch's own CREATE3 "Address NFT" scheme and dropped
+plain CREATE2 support outright in 2026, 1miner keeps `create2` as a
+first-class mode alongside `create3`, and every hit is re-derived on the
+CPU before it's reported.
+
+```sh
+git clone https://github.com/1inch/1miner.git
+cd 1miner
+cargo build --release
+
+./target/release/1miner create2 \
+  --deployer 0x000000000000c57CF0A1f923d44527e703F1ad70 \
+  --init-code-hash 0xbcbdfadcc59d9dc57408c9c0b8c471bde38115ed725ac4bbe1308d01651d5d99 \
+  --leading 0
+```
+
+`--deployer` is `DEPLOYER` and `--init-code-hash` is `INIT_CODE_HASH`
+above. Each match prints a salt and the resulting address; keep mining
+until the address has enough leading zero bytes, or see
+`1miner create2 --help` for the other scoring modes. Verify the result
+independently before reserving:
+
+```sh
+cast create2 \
+  --deployer 0x000000000000c57CF0A1f923d44527e703F1ad70 \
+  --salt <mined salt> \
+  --init-code-hash 0xbcbdfadcc59d9dc57408c9c0b8c471bde38115ed725ac4bbe1308d01651d5d99
+```
+
+That salt is what you pass to `reveal`.
 
 `reserve` starts a 24-hour exclusive period.
 After that period anyone may call `dispute` to replace an unrevealed reservation with their own 24-hour reservation.
