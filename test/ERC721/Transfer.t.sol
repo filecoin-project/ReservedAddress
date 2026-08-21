@@ -191,6 +191,30 @@ contract TransferTest is Test {
         DEPLOYER.transferFrom(reserver, recipient, tokenId);
     }
 
+    function testTransferOutOfRangeTokenIdReverts() public {
+        address origin = makeAddr("origin");
+        address recipient = makeAddr("recipient");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.transferFrom(origin, recipient, token1 + 2 ** 160);
+
+        assertEq(DEPLOYER.ownerOf(token1), origin);
+    }
+
+    function testApproveOutOfRangeTokenIdReverts() public {
+        address origin = makeAddr("origin");
+        address approved = makeAddr("approved");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.approve(approved, token1 + 2 ** 160);
+
+        assertEq(DEPLOYER.getApproved(token1), address(0));
+    }
+
     function testTransferFromZeroAddressWhenUnownedReverts() public {
         address recipient = makeAddr("recipient");
         address unowned = makeAddr("unowned");

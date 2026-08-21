@@ -165,6 +165,21 @@ contract SafeTransferTest is Test {
         DEPLOYER.safeTransferFrom(impostor, address(receiver), token1, "");
     }
 
+    function testSafeTransferOutOfRangeTokenIdReverts() public {
+        address origin = makeAddr("origin");
+        uint256 token1 = mint(SALT1, origin);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1 + 2 ** 160);
+
+        vm.expectRevert(IDeployer.InvalidAddress.selector);
+        vm.prank(origin);
+        DEPLOYER.safeTransferFrom(origin, address(receiver), token1 + 2 ** 160, "");
+
+        assertEq(DEPLOYER.ownerOf(token1), origin);
+    }
+
     function testSafeTransferFromZeroAddressWhenUnownedReverts() public {
         address unowned = makeAddr("unowned");
         uint256 tokenId = uint256(uint160(unowned));

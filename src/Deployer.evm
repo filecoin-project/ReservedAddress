@@ -265,7 +265,8 @@ RETURN(0, MSIZE)
 
 approve:
 // approve(address, uint256)
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // tokenId
+CALLDATALOAD(36) // tokenId
+JUMPI(invalidaddress, SHR(160, DUP1))
 CALLDATALOAD(4) // operator
 SLOAD(DUP2) // reservation
 JUMPI(approveauthorized, EQ(CALLER, DUP1)) // caller is owner
@@ -306,7 +307,8 @@ transferfrom:
 // safeTransferFrom(address from, address to, uint256 tokenId)
 // safeTransferFrom(address from, address to, uint256 tokenId, bytes data)
 
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(68)) // tokenId
+CALLDATALOAD(68) // tokenId
+JUMPI(invalidaddress, SHR(160, DUP1))
 AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // recipient
 JUMPI(invalidaddress, ISZERO(DUP1))
 SLOAD(DUP2) // owner
