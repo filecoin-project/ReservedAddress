@@ -224,14 +224,12 @@ AND(0xf, DUP2) // nibble
 // 48 is 0, 97 is a (=10), 49-10=39
 ADD(48, MUL(39, LT(0x9, DUP1)))
 MSTORE8(DUP2, ADD)
-0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ADD // outIndex -= 1
-SWAP1 4 SHR SWAP1 // token >>= 4
 
-AND(0xf, DUP2) // nibble
+SHR(4, AND(0xf0, DUP2)) // nibble
 ADD(48, MUL(39, LT(0x9, DUP1)))
-MSTORE8(DUP2, ADD)
-0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff ADD // outIndex -= 1
-SWAP1 4 SHR SWAP1 // token >>= 4
+MSTORE8(SUB(DUP3, 1), ADD)
+0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe ADD // outIndex -= 2
+SWAP1 8 SHR SWAP1 // token >>= 8
 
 JUMPI(loop, LT(105, DUP1))
 RETURN(0, 146)
