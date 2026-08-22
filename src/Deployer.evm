@@ -323,8 +323,7 @@ AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // recipient
 JUMPI(invalidaddress, ISZERO(DUP1))
 SLOAD(DUP2) // owner
 
-JUMPI(accessdenied, SHR(160, DUP1)) // token is reserved but unowned
-JUMPI(accessdenied, XOR(CALLDATALOAD(4), DUP1)) // from must be owner
+JUMPI(accessdenied, OR(SHR(160, DUP2), XOR(CALLDATALOAD(4), DUP1))) // from must be owner
 JUMPI(dotransfer, EQ(CALLER, DUP1))
 JUMPI(dotransfer,
     EQ(CALLER, SLOAD(OR(0x20000000000000000000000000000000000000000, DUP3)))  // getApproved[tokenId] == msg.sender
