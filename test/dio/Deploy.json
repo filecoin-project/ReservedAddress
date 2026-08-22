@@ -11,7 +11,7 @@
             },
             {
                 "name": "reserved is unowned",
-                "gasUsed": "0x5cf0",
+                "gasUsed": "0x5caf",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x6352211e000000000000000000000000e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
                 "status": "0x0",
@@ -56,7 +56,7 @@
             },
             {
                 "name": "after dispute, still unowned",
-                "gasUsed": "0x5cf0",
+                "gasUsed": "0x5caf",
                 "from": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
                 "input": "0x6352211e000000000000000000000000f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
                 "status": "0x0",
@@ -70,7 +70,7 @@
             },
             {
                 "name": "reveal by non-reserver reverts NotOwner",
-                "gasUsed": "0xbcc6",
+                "gasUsed": "0xbcc7",
                 "from": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
                 "input": "0x5a62852500000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb20123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
                 "status": "0x0",
@@ -78,13 +78,13 @@
             },
             {
                 "name": "reveal by reserver succeeds",
-                "gasUsed": "0x11e73",
+                "gasUsed": "0x11e74",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x5a62852500000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb20123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
             },
             {
                 "name": "ownerOf reflects revealer",
-                "gasUsed": "0x5cef",
+                "gasUsed": "0x5cae",
                 "from": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "input": "0x6352211e00000000000000000000000088e5a58067f6ce36c04bdc36ca0c53020dfb8bb2",
                 "output": "0x000000000000000000000000a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
