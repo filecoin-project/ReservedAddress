@@ -6,6 +6,7 @@ import {LibClone} from "solady/utils/LibClone.sol";
 
 import {IDeployer} from "../src/interfaces/IDeployer.sol";
 import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
+import {EmptyCodeConstructor} from "./EmptyCodeConstructor.sol";
 import {Example} from "./Example.sol";
 import {PayableExample} from "./PayableExample.sol";
 import {RevertingConstructor} from "./RevertingConstructor.sol";
@@ -92,6 +93,22 @@ contract DeploymentTest is Test {
 
         vm.prank(owner);
         vm.expectRevert(abi.encodeWithSelector(RevertingConstructor.ExpectedRevert.selector, 42));
+        DEPLOYER.deploy(reserved, initCode);
+
+        assertEq(reserved.code.length, 0);
+        assertEq(getStoredSalt(reserved), salt);
+    }
+
+    function testDeployRevertsOnEmptyCode() public {
+        address owner = makeAddr("owner");
+        bytes32 salt = bytes32(uint256(4));
+        address reserved = reserveAddress(salt, owner);
+
+        address initCode = makeAddr("emptyCodeInitCode");
+        vm.etch(initCode, type(EmptyCodeConstructor).creationCode);
+
+        vm.prank(owner);
+        vm.expectRevert(IDeployer.EmptyCode.selector);
         DEPLOYER.deploy(reserved, initCode);
 
         assertEq(reserved.code.length, 0);

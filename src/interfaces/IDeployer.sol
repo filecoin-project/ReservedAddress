@@ -8,6 +8,7 @@ interface IDeployer {
     error Reserved();
     error BadSalt();
     error UnexpectedValue();
+    error EmptyCode();
 
     // Permissioned
     function deploy(address owned, address initCode) external payable;

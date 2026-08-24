@@ -190,7 +190,9 @@ STOP
 setcodecheckcodesize:
 // stack is: 0 &salt[target] target
 JUMPI(cleanup, EXTCODESIZE)
-REVERT(0, MSIZE)
+// error EmptyCode()
+MSTORE(0, 0x1858b10b)
+REVERT(28, 4)
 
 cleanup:
 // stack is: 0 &salt[target]
