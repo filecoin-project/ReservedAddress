@@ -8,6 +8,7 @@ import {IDeployer} from "../src/interfaces/IDeployer.sol";
 import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
 import {Example} from "./Example.sol";
 import {PayableExample} from "./PayableExample.sol";
+import {RevertingConstructor} from "./RevertingConstructor.sol";
 
 uint256 constant DAY = 24 * 60 * 60;
 uint256 constant START_TIME = 1787089200;
@@ -79,6 +80,22 @@ contract DeploymentTest is Test {
         assertEq(PayableExample(reserved).CALLVALUE(), 1 ether);
         assertEq(reserved.balance, 1 ether);
         assertEq(address(DEPLOYER).balance, 2 ether);
+    }
+
+    function testDeployPropagatesCreateFailure() public {
+        address owner = makeAddr("owner");
+        bytes32 salt = bytes32(uint256(3));
+        address reserved = reserveAddress(salt, owner);
+
+        address initCode = makeAddr("revertingInitCode");
+        vm.etch(initCode, type(RevertingConstructor).creationCode);
+
+        vm.prank(owner);
+        vm.expectRevert(abi.encodeWithSelector(RevertingConstructor.ExpectedRevert.selector, 42));
+        DEPLOYER.deploy(reserved, initCode);
+
+        assertEq(reserved.code.length, 0);
+        assertEq(getStoredSalt(reserved), salt);
     }
 
     function testReserveRevealDeployCall() public {
