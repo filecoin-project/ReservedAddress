@@ -65,7 +65,7 @@ contract InitTest is Test {
         }
     }
 
-    fallback() external payable {
+    receive() external payable {
         assembly ("memory-safe") {
             mstore(0, sload(0))
             return(0, 32)
