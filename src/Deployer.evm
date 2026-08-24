@@ -328,7 +328,7 @@ transferfrom:
 
 CALLDATALOAD(68) // tokenId
 JUMPI(invalidaddress, SHR(160, DUP1))
-AND(0xffffffffffffffffffffffffffffffffffffffff, CALLDATALOAD(36)) // recipient
+SHR(96, CALLDATALOAD(48)) // recipient
 JUMPI(invalidaddress, ISZERO(DUP1))
 SLOAD(DUP2) // owner
 
