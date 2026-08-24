@@ -15,6 +15,7 @@ contract Example {
     }
 
     function pay(address payable recipient) external payable {
-        recipient.transfer(msg.value);
+        (bool success,) = recipient.call{value: msg.value}("");
+        require(success);
     }
 }
