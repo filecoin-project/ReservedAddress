@@ -16,6 +16,7 @@ remappings = [
     'forge-std/=lib/forge-std/src/',
 ]
 ignored_error_codes = [
+    2424, # https://github.com/Vectorized/solady/issues/1512
 ]
 
 [lint]
