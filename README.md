@@ -128,6 +128,23 @@ It does not directly alter authorisation stored by the deployed contract.
 - Constructor code must tolerate the factory as `msg.sender`.
   Prefer explicit constructor ownership parameters where possible.
 
+## Why assembly
+
+- This factory is a fork of another that was also written in assembly.
+- Deterministic bytecode is load-bearing.
+  The initcode trampoline used by `CREATE2` must not change due to compiler settings such as EVM version.
+- Storage is packed by hand.
+  ERC-721 state (`ownerOf`, `getApproved`, `balanceOf`, `isApprovedForAll`) is addressed by tagging the high bits of the storage slot, instead of Solidity's default `keccak256(key, slot)` mapping layout, saving a `SHA3` on every storage access.
+  There is also no chance of hash collisions across mappings.
+- Dispatch is a binary search over the selectors, tuned to prioritize hot selectors rather than solc's generic linear dispatch.
+  It also validates that the first argument is a valid address for no extra cost.
+- There is no upgrade path.
+  The deployment is final, so optimization cannot be deferred.
+  The solidity compiler cannot make different codesize for runtime gas tradeoffs for different branches.
+  It cannot combine dispatch with first-argument validation.
+  It always prepares the free memory pointer even if no memory will be allocated.
+  It contains bugs preventing functions from inlining.
+
 ## Development
 
 ```sh
@@ -177,3 +194,7 @@ find test -name '*.t.sol'
 # Run a test individually
 forge test --match-path test/ERC721/SafeTransfer.t.sol
 ```
+
+### Deploying the factory
+
+Replay the legacy transaction onto any Filecoin network.
