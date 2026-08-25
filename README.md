@@ -128,6 +128,11 @@ It does not directly alter authorisation stored by the deployed contract.
 - Constructor code must tolerate the factory as `msg.sender`.
   Prefer explicit constructor ownership parameters where possible.
 
+## Known Issues
+
+- An owner can call `reveal` repeatedly, inflating their own `balanceOf` and emitting spurious mint `Transfer` events each time.
+  `ownerOf` and actual token control are unaffected; treat `balanceOf` as unreliable.
+
 ## Why assembly
 
 - This factory is a fork of another that was also written in assembly.
