@@ -202,4 +202,9 @@ forge test --match-path test/ERC721/SafeTransfer.t.sol
 
 ### Deploying the factory
 
-Replay the legacy transaction onto any Filecoin network.
+1. Fund the factory creator account, `0x3ef96E9f82CaFE4a05183b59e7671E39B6b26347`, with 0.2 FIL.
+2. Replay the [legacy CREATE transaction](./deploy.json) onto any Filecoin network.
+
+```
+curl --header "Content-Type: application/json" --data @deploy.json $RPC_URL
+```
