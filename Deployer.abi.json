@@ -477,6 +477,11 @@
   },
   {
     "type": "error",
+    "name": "EmptyCode",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "InvalidAddress",
     "inputs": []
   },
