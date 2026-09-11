@@ -3,9 +3,10 @@ pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
 import {LibClone} from "solady/utils/LibClone.sol";
+import {LibRLP} from "solady/utils/LibRLP.sol";
 
 import {IDeployer} from "../src/interfaces/IDeployer.sol";
-import {IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
+import {DEPLOYER, DEPLOYER_CREATOR, IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
 import {EmptyCodeConstructor} from "./EmptyCodeConstructor.sol";
 import {Example} from "./Example.sol";
 import {PayableExample} from "./PayableExample.sol";
@@ -16,8 +17,6 @@ uint256 constant START_TIME = 1787089200;
 
 contract DeploymentTest is Test {
     using IDeployerLibrary for IDeployer;
-
-    IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     function setUp() public {
         vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
@@ -37,6 +36,10 @@ contract DeploymentTest is Test {
         DEPLOYER.reserve(reserved);
         DEPLOYER.reveal(reserved, salt);
         vm.stopPrank();
+    }
+
+    function testDeployerCreator() public pure {
+        assertEq(address(DEPLOYER), LibRLP.computeAddress(DEPLOYER_CREATOR, 0));
     }
 
     function testFallbackRejectsValue() public {
