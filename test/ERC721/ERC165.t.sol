@@ -2,17 +2,21 @@
 pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 import {IDeployer} from "../../src/interfaces/IDeployer.sol";
 import {IERC165} from "../../src/interfaces/IERC165.sol";
 import {IERC721} from "../../src/interfaces/IERC721.sol";
 import {IERC721Metadata} from "../../src/interfaces/IERC721Metadata.sol";
+import {DeployerCheats} from "../../src/lib/DeployerCheats.sol";
 
 contract ERC165Test is Test {
+    using DeployerCheats for Vm;
+
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     function setUp() public {
-        vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
+        vm.deployDeployer();
     }
 
     function testSupports165() public pure {

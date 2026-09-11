@@ -2,14 +2,18 @@
 pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 import {IDeployer} from "../../src/interfaces/IDeployer.sol";
+import {DeployerCheats} from "../../src/lib/DeployerCheats.sol";
 
 contract MetadataTest is Test {
+    using DeployerCheats for Vm;
+
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     function setUp() public {
-        vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
+        vm.deployDeployer();
     }
 
     function testName() public pure {

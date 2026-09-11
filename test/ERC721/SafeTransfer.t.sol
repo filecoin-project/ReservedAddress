@@ -2,13 +2,17 @@
 pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 import {LibClone} from "solady/utils/LibClone.sol";
 
 import {ERC721Receiver} from "./ERC721Receiver.sol";
 import {IDeployer} from "../../src/interfaces/IDeployer.sol";
 import {IERC721} from "../../src/interfaces/IERC721.sol";
+import {DeployerCheats} from "../../src/lib/DeployerCheats.sol";
 
 contract SafeTransferTest is Test {
+    using DeployerCheats for Vm;
+
     IDeployer constant DEPLOYER = IDeployer(0x000000000000c57CF0A1f923d44527e703F1ad70);
 
     bytes32 initCodeHash;
@@ -17,7 +21,7 @@ contract SafeTransferTest is Test {
     bytes32 constant SALT1 = 0x5678567856785678567856785678567856785678567856785678567856785678;
 
     function setUp() public {
-        vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
+        vm.deployDeployer();
         initCodeHash = keccak256(vm.getDeployedCode("out/Init.evm/Init.json"));
         receiver = new ERC721Receiver();
     }

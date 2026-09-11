@@ -2,11 +2,13 @@
 pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
+import {Vm} from "forge-std/Vm.sol";
 import {LibClone} from "solady/utils/LibClone.sol";
 import {LibRLP} from "solady/utils/LibRLP.sol";
 
 import {IDeployer} from "../src/interfaces/IDeployer.sol";
 import {DEPLOYER, DEPLOYER_CREATOR, IDeployerLibrary} from "../src/lib/IDeployerLibrary.sol";
+import {DeployerCheats} from "../src/lib/DeployerCheats.sol";
 import {EmptyCodeConstructor} from "./EmptyCodeConstructor.sol";
 import {Example} from "./Example.sol";
 import {PayableExample} from "./PayableExample.sol";
@@ -17,9 +19,10 @@ uint256 constant START_TIME = 1787089200;
 
 contract DeploymentTest is Test {
     using IDeployerLibrary for IDeployer;
+    using DeployerCheats for Vm;
 
     function setUp() public {
-        vm.etch(address(DEPLOYER), vm.getDeployedCode("out/Deployer.evm/Deployer.json"));
+        vm.deployDeployer();
         vm.warp(START_TIME);
     }
 
